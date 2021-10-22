@@ -1,63 +1,68 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  Button,
-  StyleSheet,
-  Keyboard,
   Alert,
+  Button,
+  Keyboard,
   Modal,
-} from "react-native";
-import Input from "./Input";
-import Colors from "../constants/Colors";
+  StyleSheet,
+  Text,
+  View
+} from 'react-native';
+import Colors from '../constants/Colors';
+import { maxBpm, minBpm } from '../constants/Values';
+import { Input } from './Input';
 
-const minBpm = 10;
-const maxBpm = 200;
+export type FrequencyInputProps = {
+  modalVisible: boolean;
+  setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setFrequency: (value: React.SetStateAction<number>) => void;
+};
 
-const FrequencyInput = (props) => {
-  const [enteredValue, setEnteredValue] = useState("");
+export const FrequencyInput = ({
+  modalVisible,
+  setModalVisible,
+  setFrequency,
+}: FrequencyInputProps) => {
+  const [enteredValue, setEnteredValue] = useState('');
 
   const numberInputHandler = (inputText) => {
-    setEnteredValue(inputText.replace(/[^0-9]/g, ""));
+    setEnteredValue(inputText.replace(/[^0-9]/g, ''));
   };
 
   const resetInputHandler = () => {
-    setEnteredValue("");
-    props.setModalVisible(false);
+    setEnteredValue('');
+    setModalVisible(false);
   };
 
   const confirmInputHandler = () => {
     const chosenNumber = parseInt(enteredValue);
     if (isNaN(chosenNumber) || chosenNumber < minBpm || chosenNumber > maxBpm) {
       Alert.alert(
-        "Ungültige Frequenz",
+        'Ungültige Frequenz',
         `Frequenz muss zwischen ${minBpm} und ${maxBpm} bpm liegen.`,
-        [{ text: "Okay", style: "destructive", onPress: resetInputHandler }]
+        [{ text: 'Okay', style: 'destructive', onPress: resetInputHandler }]
       );
       return;
     }
-    props.setFrequency(chosenNumber);
-    setEnteredValue("");
+    setFrequency(chosenNumber);
+    setEnteredValue('');
     Keyboard.dismiss();
   };
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={false}
-      visible={props.modalVisible}
-    >
+    <Modal animationType="slide" transparent={false} visible={modalVisible}>
       <View style={(styles.centeredView, styles.inputContainer)}>
         <Text>Frequenz in bpm</Text>
         <Input
-          style={styles.input}
           blurOnSubmit
-          autoCapitalize={"none"}
+          style={styles.input}
+          autoCapitalize={'none'}
           autoCorrect={false}
           keyboardType="number-pad"
           maxLength={3}
           onChangeText={numberInputHandler}
           value={enteredValue}
+
         />
         <View style={styles.buttonContainer}>
           <View style={styles.button}>
@@ -83,30 +88,27 @@ const FrequencyInput = (props) => {
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    textAlign: "center",
-    color: "white",
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    color: 'white',
   },
   input: {
     width: 150,
-    textAlign: "center",
+    textAlign: 'center',
   },
   buttonContainer: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
     padding: 15,
+    maxWidth: "100%"
   },
   button: {
     width: 100,
   },
   inputContainer: {
-    // width: 300,
-    maxWidth: "80%",
-    alignItems: "center",
-    margin: 10,
+    alignItems: 'center',
+    margin: 40,
   },
 });
-
-export default FrequencyInput;

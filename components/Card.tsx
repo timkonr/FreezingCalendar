@@ -1,23 +1,24 @@
-import React from "react";
-import { View, StyleSheet } from "react-native";
+import React from 'react';
+import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
 
-const Card = (props) => {
-  return (
-    <View style={{ ...styles.card, ...props.style }}>{props.children}</View>
-  );
+export type CardProps = {
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+};
+
+export const Card = ({ children, style }: CardProps) => {
+  return <View style={{ ...styles.card, ...(style as {}) }}>{children}</View>;
 };
 
 const styles = StyleSheet.create({
   card: {
-    shadowColor: "black",
+    shadowColor: 'black',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.26,
     shadowRadius: 6,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     elevation: 8,
     padding: 20,
     borderRadius: 10,
   },
 });
-
-export default Card;

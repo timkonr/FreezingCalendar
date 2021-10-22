@@ -1,22 +1,17 @@
-import React, { useEffect, useState } from "react";
+import { Audio } from 'expo-av';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
-  InteractionManager,
   Keyboard,
-  Modal,
   StyleSheet,
   TouchableWithoutFeedback,
-  Vibration,
-  View,
-} from "react-native";
-import Card from "../components/Card";
-import FrequencyInput from "../components/FrequencyInput";
-import Colors from "../constants/Colors";
-import { Audio } from "expo-av";
+  View
+} from 'react-native';
+import { Card } from '../components/Card';
+import { FrequencyInput } from '../components/FrequencyInput';
+import Colors from '../constants/Colors';
 
-
-
-const MetronomScreen = () => {
+export const MetronomScreen = () => {
   const [cueingFrequency, setCueingFrequency] = useState(100);
   const [modalVisible, setModalVisible] = useState(false);
   const [sound, setSound] = useState(new Audio.Sound());
@@ -37,7 +32,7 @@ const MetronomScreen = () => {
 
   async function loadSound() {
     await sound.loadAsync(
-      require("../assets/metronome-tempo-single-sound_G_major.mp3")
+      require('../assets/metronome-tempo-single-sound_G_major.mp3')
     );
     sound.setOnPlaybackStatusUpdate((status) => {
       if (status.isLoaded) {
@@ -66,7 +61,7 @@ const MetronomScreen = () => {
       playSound(freq);
       // Vibration.vibrate([freq - duration, duration], true);
     } else {
-      console.log("select please");
+      console.log('select please');
     }
   };
 
@@ -79,7 +74,7 @@ const MetronomScreen = () => {
     }
   };
 
-  const setFrequency = (frequency) => {
+  const setFrequency = (frequency: number) => {
     setCueingFrequency(frequency);
     setModalVisible(false);
   };
@@ -131,7 +126,7 @@ const MetronomScreen = () => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    alignItems: "center",
+    alignItems: 'center',
   },
   title: {
     fontSize: 20,
@@ -139,19 +134,17 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     width: 300,
-    maxWidth: "80%",
-    alignItems: "center",
+    maxWidth: '80%',
+    alignItems: 'center',
     margin: 10,
   },
   buttonContainer: {
-    flexDirection: "row",
-    width: "100%",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
     padding: 15,
   },
   button: {
     width: 100,
   },
 });
-
-export default MetronomScreen;

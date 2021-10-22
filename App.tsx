@@ -1,12 +1,12 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Header from './components/Header';
-import MetronomScreen from './screens/MetronomScreen';
+import { StyleSheet, View } from 'react-native';
+import { Header } from './components/Header';
+import { MetronomScreen } from './screens/MetronomScreen';
 
 export default function App() {
   return (
     <View style={styles.screen}>
-      <Header title={"Unfreeze me"} />
+      <Header title={'Freezing Calendar'} />
       <MetronomScreen />
     </View>
   );
