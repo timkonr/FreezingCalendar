@@ -6,7 +6,7 @@ import {
   Modal,
   StyleSheet,
   Text,
-  View
+  View,
 } from 'react-native';
 import Colors from '../constants/Colors';
 import { maxBpm, minBpm } from '../constants/Values';
@@ -62,7 +62,6 @@ export const FrequencyInput = ({
           maxLength={3}
           onChangeText={numberInputHandler}
           value={enteredValue}
-
         />
         <View style={styles.buttonContainer}>
           <View style={styles.button}>
@@ -102,7 +101,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'space-between',
     padding: 15,
-    maxWidth: "100%"
+    maxWidth: '100%',
   },
   button: {
     width: 100,

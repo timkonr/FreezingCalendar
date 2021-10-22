@@ -5,7 +5,7 @@ import {
   Keyboard,
   StyleSheet,
   TouchableWithoutFeedback,
-  View
+  View,
 } from 'react-native';
 import { Card } from '../components/Card';
 import { FrequencyInput } from '../components/FrequencyInput';
