@@ -40,7 +40,7 @@ export const FrequencyInput = ({
       Alert.alert(
         'Ungültige Frequenz',
         `Frequenz muss zwischen ${minBpm} und ${maxBpm} bpm liegen.`,
-        [{ text: 'Okay', style: 'destructive', onPress: resetInputHandler }]
+        [{ text: 'Okay', style: 'destructive' }]
       );
       return;
     }
