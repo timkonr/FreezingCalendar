@@ -15,7 +15,7 @@ import { Input } from './Input';
 export type FrequencyInputProps = {
   modalVisible: boolean;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setFrequency: (value: React.SetStateAction<number>) => void;
+  setFrequency: (frequency: number) => void;
   cueingFrequency?: number;
 };
 
@@ -27,8 +27,8 @@ export const FrequencyInput = ({
 }: FrequencyInputProps) => {
   const [input, setInput] = useState(cueingFrequency?.toString() ?? '');
 
-  const numberInputHandler = (inputText) => {
-    setInput(inputText.replace(/[^0-9]/g, ''));
+  const numberInputHandler = (text: string) => {
+    setInput(text.replace(/[^0-9]/g, ''));
   };
 
   const resetInputHandler = () => {

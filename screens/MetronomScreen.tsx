@@ -19,7 +19,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
   const [cueingFrequency, setCueingFrequency] = useState<number>();
   const [modalVisible, setModalVisible] = useState(false);
   const [sound, setSound] = useState(new Audio.Sound());
-  const [soundInterval, setSoundInterval] = useState(null);
+  const [soundInterval, setSoundInterval] = useState<number>();
 
   useEffect(() => {
     if (sound) {
