@@ -16,26 +16,28 @@ export type FrequencyInputProps = {
   modalVisible: boolean;
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setFrequency: (value: React.SetStateAction<number>) => void;
+  cueingFrequency?: number;
 };
 
 export const FrequencyInput = ({
   modalVisible,
   setModalVisible,
   setFrequency,
+  cueingFrequency,
 }: FrequencyInputProps) => {
-  const [enteredValue, setEnteredValue] = useState('');
+  const [input, setInput] = useState(cueingFrequency?.toString() ?? '');
 
   const numberInputHandler = (inputText) => {
-    setEnteredValue(inputText.replace(/[^0-9]/g, ''));
+    setInput(inputText.replace(/[^0-9]/g, ''));
   };
 
   const resetInputHandler = () => {
-    setEnteredValue('');
+    setInput('');
     setModalVisible(false);
   };
 
   const confirmInputHandler = () => {
-    const chosenNumber = parseInt(enteredValue);
+    const chosenNumber = parseInt(input);
     if (isNaN(chosenNumber) || chosenNumber < minBpm || chosenNumber > maxBpm) {
       Alert.alert(
         'Ungültige Frequenz',
@@ -45,7 +47,7 @@ export const FrequencyInput = ({
       return;
     }
     setFrequency(chosenNumber);
-    setEnteredValue('');
+    setInput('');
     Keyboard.dismiss();
   };
 
@@ -61,7 +63,7 @@ export const FrequencyInput = ({
           keyboardType="number-pad"
           maxLength={3}
           onChangeText={numberInputHandler}
-          value={enteredValue}
+          value={input}
         />
         <View style={styles.buttonContainer}>
           <View style={styles.button}>

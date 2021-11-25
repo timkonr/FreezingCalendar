@@ -1,22 +1,24 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Audio } from 'expo-av';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Button,
   Keyboard,
   StyleSheet,
+  Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { Card } from '../components/Card';
 import { FrequencyInput } from '../components/FrequencyInput';
 import Colors from '../constants/Colors';
+import { CUEING_FREQUENCY } from '../constants/Values';
 import { Props } from '../types';
 
 export const MetronomScreen = ({ navigation }: Props) => {
-  const [cueingFrequency, setCueingFrequency] = useState(100);
+  const [cueingFrequency, setCueingFrequency] = useState<number>();
   const [modalVisible, setModalVisible] = useState(false);
   const [sound, setSound] = useState(new Audio.Sound());
-
   const [soundInterval, setSoundInterval] = useState(null);
 
   useEffect(() => {
@@ -24,6 +26,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
       loadSound();
     }
 
+    loadSavedFrequency();
     return sound
       ? () => {
           sound.unloadAsync();
@@ -31,7 +34,12 @@ export const MetronomScreen = ({ navigation }: Props) => {
       : undefined;
   }, [sound]);
 
-  async function loadSound() {
+  const loadSavedFrequency = useCallback(async () => {
+    const freq = await AsyncStorage.getItem(CUEING_FREQUENCY);
+    if (freq) setCueingFrequency(parseInt(freq));
+  }, []);
+
+  const loadSound = useCallback(async () => {
     await sound.loadAsync(
       require('../assets/metronome-tempo-single-sound_G_major.mp3')
     );
@@ -42,9 +50,9 @@ export const MetronomScreen = ({ navigation }: Props) => {
         }
       }
     });
-  }
+  }, []);
 
-  async function playSound(frequency) {
+  const playSound = useCallback(async (frequency) => {
     if (sound) {
       setSoundInterval(
         setInterval(async () => {
@@ -53,18 +61,17 @@ export const MetronomScreen = ({ navigation }: Props) => {
         }, frequency)
       );
     }
-  }
+  }, []);
 
-  const startTrainingHandler = () => {
+  const startTrainingHandler = useCallback(() => {
     if (cueingFrequency) {
       const duration = 100;
       const freq = 60000 / cueingFrequency;
       playSound(freq);
-      // Vibration.vibrate([freq - duration, duration], true);
     } else {
       console.log('select please');
     }
-  };
+  }, []);
 
   const stopTrainingHandler = () => {
     if (soundInterval) {
@@ -78,6 +85,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
   const setFrequency = (frequency: number) => {
     setCueingFrequency(frequency);
     setModalVisible(false);
+    AsyncStorage.setItem(CUEING_FREQUENCY, frequency.toString());
   };
 
   return (
@@ -88,9 +96,12 @@ export const MetronomScreen = ({ navigation }: Props) => {
     >
       <View style={styles.screen}>
         <Card style={styles.inputContainer}>
+          <Text style={{ marginBottom: 10 }}>
+            Cueing Frequenz: {cueingFrequency ?? 'Bitte einstellen'}
+          </Text>
           <Button
             color={Colors.primary}
-            title="Cueing Frequenz einstellen"
+            title="Einstellen"
             onPress={() => {
               setModalVisible(true);
             }}
@@ -100,6 +111,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
           setFrequency={setFrequency}
+          cueingFrequency={cueingFrequency}
         />
         <Card style={styles.inputContainer}>
           <View style={styles.buttonContainer}>
