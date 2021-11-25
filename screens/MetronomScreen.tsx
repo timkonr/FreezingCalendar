@@ -10,8 +10,9 @@ import {
 import { Card } from '../components/Card';
 import { FrequencyInput } from '../components/FrequencyInput';
 import Colors from '../constants/Colors';
+import { Props } from '../types';
 
-export const MetronomScreen = () => {
+export const MetronomScreen = ({ navigation }: Props) => {
   const [cueingFrequency, setCueingFrequency] = useState(100);
   const [modalVisible, setModalVisible] = useState(false);
   const [sound, setSound] = useState(new Audio.Sound());
