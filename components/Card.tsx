@@ -1,13 +1,21 @@
 import React from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleProp, StyleSheet, Text, View, ViewStyle } from 'react-native';
 
 export type CardProps = {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
+  title?: string;
 };
 
-export const Card = ({ children, style }: CardProps) => {
-  return <View style={{ ...styles.card, ...(style as {}) }}>{children}</View>;
+export const Card = ({ children, style, title }: CardProps) => {
+  return (
+    <View style={{ ...styles.card, ...(style as {}) }}>
+      {title && (
+        <Text style={{ fontWeight: 'bold', fontSize: 16 }}>{title}</Text>
+      )}
+      {children}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
