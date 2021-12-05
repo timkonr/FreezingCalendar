@@ -18,24 +18,24 @@ import { CUEING_FREQUENCY } from '../constants/Values';
 import { Props } from '../types';
 
 export const MetronomScreen = ({ navigation }: Props) => {
-  const [cueingFrequency, setCueingFrequency] = useState<number>();
+  const [bpm, setBpm] = useState<number>();
   const [modalVisible, setModalVisible] = useState(false);
   const [sound, setSound] = useState(new Audio.Sound());
   const [soundInterval, setSoundInterval] = useState<number>();
-  const [vibration, setVibration] = useState(false);
+  const [vibrationMode, setVibrationMode] = useState(false);
   const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>([
     {
       id: '1',
       label: 'Sound',
       value: 'sound',
       selected: true,
-      onPress: () => setVibration(false),
+      onPress: () => setVibrationMode(false),
     },
     {
       id: '2',
       label: 'Vibration',
       value: 'vibration',
-      onPress: () => setVibration(true),
+      onPress: () => setVibrationMode(true),
     },
   ]);
 
@@ -53,21 +53,22 @@ export const MetronomScreen = ({ navigation }: Props) => {
   }, [sound]);
 
   const loadSavedFrequency = useCallback(async () => {
-    const freq = await AsyncStorage.getItem(CUEING_FREQUENCY);
-    if (freq) setCueingFrequency(parseInt(freq));
+    const savedFrequency = await AsyncStorage.getItem(CUEING_FREQUENCY);
+    if (savedFrequency) setBpm(parseInt(savedFrequency));
   }, []);
 
   const loadSound = useCallback(async () => {
     await sound.loadAsync(
       require('../assets/metronome-tempo-single-sound_G_major.mp3')
     );
-    sound.setOnPlaybackStatusUpdate((status) => {
-      if (status.isLoaded) {
-        if (status.shouldPlay) {
-          // Vibration.vibrate(100, false);
-        }
-      }
-    });
+    // unsuccessful attempt of synchronising sound and vibration
+    // sound.setOnPlaybackStatusUpdate((status) => {
+    //   if (status.isLoaded) {
+    //     if (status.shouldPlay) {
+    //       // Vibration.vibrate(100, false);
+    //     }
+    //   }
+    // });
   }, [sound]);
 
   const playSound = useCallback(
@@ -84,16 +85,16 @@ export const MetronomScreen = ({ navigation }: Props) => {
   );
 
   const startTrainingHandler = useCallback(() => {
-    if (cueingFrequency) {
+    if (bpm) {
       const duration = 100;
-      const freq = 60000 / cueingFrequency;
-      if (vibration) {
+      const freq = 60000 / bpm;
+      if (vibrationMode) {
         Vibration.vibrate([freq - duration, duration], true);
       } else {
         playSound(freq);
       }
     }
-  }, [cueingFrequency, vibration, playSound]);
+  }, [bpm, vibrationMode, playSound]);
 
   const stopTrainingHandler = () => {
     if (soundInterval) {
@@ -106,7 +107,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
   };
 
   const setFrequency = (frequency: number) => {
-    setCueingFrequency(frequency);
+    setBpm(frequency);
     setModalVisible(false);
     AsyncStorage.setItem(CUEING_FREQUENCY, frequency.toString());
   };
@@ -120,11 +121,11 @@ export const MetronomScreen = ({ navigation }: Props) => {
       <View style={styles.screen}>
         <Card style={styles.inputContainer} title="Cueing Frequenz">
           <Text style={{ marginBottom: 10, fontWeight: 'bold' }}>
-            {cueingFrequency ? cueingFrequency + ' bpm' : 'Bitte einstellen'}
+            {bpm ? bpm + ' bpm' : 'Bitte einstellen'}
           </Text>
           <Button
             color={Colors.primary}
-            title={cueingFrequency ? 'Ändern' : 'Einstellen'}
+            title={bpm ? 'Ändern' : 'Einstellen'}
             onPress={() => {
               setModalVisible(true);
             }}
@@ -134,7 +135,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
           setFrequency={setFrequency}
-          cueingFrequency={cueingFrequency}
+          cueingFrequency={bpm}
         />
         <Card style={styles.inputContainer} title="Modus">
           <View style={styles.buttonContainer}>
@@ -154,7 +155,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
                 color={Colors.primary}
                 title="Start"
                 onPress={startTrainingHandler}
-                disabled={!cueingFrequency}
+                disabled={!bpm}
               />
             </View>
             <View style={styles.button}>
@@ -162,7 +163,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
                 color={Colors.accent}
                 title="Stopp"
                 onPress={stopTrainingHandler}
-                disabled={!cueingFrequency}
+                disabled={!bpm}
               />
             </View>
           </View>
