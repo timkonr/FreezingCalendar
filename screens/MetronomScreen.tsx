@@ -23,6 +23,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
   const [sound, setSound] = useState(new Audio.Sound());
   const [soundInterval, setSoundInterval] = useState<number>();
   const [vibrationMode, setVibrationMode] = useState(false);
+  const [isTraining, setIsTraining] = useState(false);
   const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>([
     {
       id: '1',
@@ -30,32 +31,21 @@ export const MetronomScreen = ({ navigation }: Props) => {
       value: 'sound',
       selected: true,
       onPress: () => setVibrationMode(false),
+      disabled: isTraining,
     },
     {
       id: '2',
       label: 'Vibration',
       value: 'vibration',
       onPress: () => setVibrationMode(true),
+      disabled: isTraining,
     },
   ]);
-
-  useEffect(() => {
-    if (sound) {
-      loadSound();
-    }
-
-    loadSavedFrequency();
-    return sound
-      ? () => {
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
 
   const loadSavedFrequency = useCallback(async () => {
     const savedFrequency = await AsyncStorage.getItem(CUEING_FREQUENCY);
     if (savedFrequency) setBpm(parseInt(savedFrequency));
-  }, []);
+  }, [setBpm]);
 
   const loadSound = useCallback(async () => {
     await sound.loadAsync(
@@ -71,6 +61,19 @@ export const MetronomScreen = ({ navigation }: Props) => {
     // });
   }, [sound]);
 
+  useEffect(() => {
+    if (sound) {
+      loadSound();
+    }
+
+    loadSavedFrequency();
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound, loadSound, loadSavedFrequency]);
+
   const playSound = useCallback(
     async (frequency) => {
       if (sound) {
@@ -81,11 +84,14 @@ export const MetronomScreen = ({ navigation }: Props) => {
         );
       }
     },
-    [sound]
+    [sound, setSoundInterval]
   );
 
   const startTrainingHandler = useCallback(() => {
     if (bpm) {
+      if (isTraining) return;
+      setIsTraining(true);
+
       const duration = 100;
       const freq = 60000 / bpm;
       if (vibrationMode) {
@@ -94,12 +100,13 @@ export const MetronomScreen = ({ navigation }: Props) => {
         playSound(freq);
       }
     }
-  }, [bpm, vibrationMode, playSound]);
+  }, [bpm, vibrationMode, playSound, isTraining, setIsTraining]);
 
   const stopTrainingHandler = () => {
     if (soundInterval) {
       clearInterval(soundInterval);
     }
+    setIsTraining(false);
     if (sound) {
       sound.stopAsync();
       Vibration.cancel();
@@ -129,6 +136,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
             onPress={() => {
               setModalVisible(true);
             }}
+            disabled={isTraining}
           />
         </Card>
         <FrequencyInput
@@ -155,7 +163,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
                 color={Colors.primary}
                 title="Start"
                 onPress={startTrainingHandler}
-                disabled={!bpm}
+                disabled={!bpm || isTraining}
               />
             </View>
             <View style={styles.button}>
@@ -163,7 +171,7 @@ export const MetronomScreen = ({ navigation }: Props) => {
                 color={Colors.accent}
                 title="Stopp"
                 onPress={stopTrainingHandler}
-                disabled={!bpm}
+                disabled={!bpm || !isTraining}
               />
             </View>
           </View>
