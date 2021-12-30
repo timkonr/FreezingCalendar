@@ -4,6 +4,7 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { MetronomScreen } from './screens/MetronomScreen';
 import { StartScreen } from './screens/StartScreen';
+import { StatistikScreen } from './screens/StatistikScreen';
 import { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -20,6 +21,7 @@ export default function App() {
           options={{ title: 'Home' }}
         />
         <Stack.Screen name="Metronom" component={MetronomScreen} />
+        <Stack.Screen name="Statistik" component={StatistikScreen} />
       </Stack.Navigator>
     </NavigationContainer>
     // </View>
