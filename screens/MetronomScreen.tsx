@@ -27,8 +27,7 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [vibrationMode, setVibrationMode] = useState(false);
   const [isTraining, setIsTraining] = useState(false);
-  // TODO lift metronome to some kind of global state in order to avoid constructing multiple metronomes
-  const [metronome, setMetronome] = useState<Metronome>(new Metronome());
+  const [metronome, setMetronome] = useState<Metronome>();
   const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>([
     {
       id: '1',
@@ -53,9 +52,10 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
   }, [setBpm]);
 
   useEffect(() => {
-    console.log('[useEffect] load saved frequency');
+    console.log('[MetronomScreen] useEffect');
     loadSavedFrequency();
-  }, [loadSavedFrequency]);
+    if (!metronome) setMetronome(new Metronome());
+  }, [loadSavedFrequency, metronome, setMetronome]);
 
   const startTrainingHandler = useCallback(() => {
     if (isTraining) return;

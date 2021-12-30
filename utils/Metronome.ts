@@ -31,13 +31,15 @@ export class Metronome {
   }
 
   stop() {
-    console.log('[Metronome] stop');
-    console.log('optimal time', this.internalProps.updateInMs);
-    console.log('min', this.internalProps.min);
-    console.log('max', this.internalProps.max);
-    console.log('margin', this.internalProps.max - this.internalProps.min, 'ms');
-
-    this.internalProps = {isRunning: false, timeElapsed: 0, biggestDiff: 0, min: Number.MAX_VALUE, max: 0};
+    if (this.internalProps.isRunning) {
+      console.log('[Metronome] stop');
+      console.log('optimal time', this.internalProps.updateInMs);
+      console.log('min', this.internalProps.min);
+      console.log('max', this.internalProps.max);
+      console.log('margin', this.internalProps.max - this.internalProps.min, 'ms');
+  
+      this.internalProps = {...this.internalProps, isRunning: false, timeElapsed: 0, biggestDiff: 0, min: Number.MAX_VALUE, max: 0};
+    }
   }
   
   /**
