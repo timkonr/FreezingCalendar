@@ -20,7 +20,7 @@ import { FrequencyInput } from '../components/FrequencyInput';
 import Colors from '../constants/Colors';
 import { CUEING_FREQUENCY } from '../constants/Values';
 import { Props } from '../types';
-import { Metronome } from '../utils';
+import { Metronome, Tracker } from '../utils';
 
 export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
   const [bpm, setBpm] = useState<number>();
@@ -28,6 +28,7 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
   const [vibrationMode, setVibrationMode] = useState(false);
   const [isTraining, setIsTraining] = useState(false);
   const [metronome, setMetronome] = useState<Metronome>();
+  const [tracker, setTracker] = useState<Tracker>();
   const [radioButtons, setRadioButtons] = useState<RadioButtonProps[]>([
     {
       id: '1',
@@ -55,12 +56,14 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
     console.log('[MetronomScreen] useEffect');
     loadSavedFrequency();
     if (!metronome) setMetronome(new Metronome());
+    if (!tracker) setTracker(new Tracker());
   }, [loadSavedFrequency, metronome, setMetronome]);
 
   const startTrainingHandler = useCallback(() => {
     if (isTraining) return;
     if (bpm) {
       setIsTraining(true);
+      tracker?.startTracking(bpm);
       if (vibrationMode) {
         const duration = 100;
         const freq = 60000 / bpm;
@@ -69,13 +72,14 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
         metronome?.start(bpm);
       }
     }
-  }, [bpm, metronome, vibrationMode, isTraining, setIsTraining]);
+  }, [bpm, metronome, vibrationMode, isTraining, setIsTraining, tracker]);
 
   const stopTrainingHandler = () => {
     if (isTraining) {
       metronome?.stop();
       Vibration.cancel();
     }
+    tracker?.stopTracking();
     setIsTraining(false);
   };
 
