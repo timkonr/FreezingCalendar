@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, StyleSheet, View } from 'react-native';
 import { Props } from '../types';
 
-export const StartScreen = ({ navigation }: Props) => {
+export const StartScreen = ({ navigation }: Props<'Home'>) => {
   return (
     <View style={styles.screen}>
       <Button

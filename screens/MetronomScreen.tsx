@@ -22,7 +22,7 @@ import { CUEING_FREQUENCY } from '../constants/Values';
 import { Props } from '../types';
 import { Metronome } from '../utils';
 
-export const MetronomScreen = ({ navigation }: Props) => {
+export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
   const [bpm, setBpm] = useState<number>();
   const [modalVisible, setModalVisible] = useState(false);
   const [vibrationMode, setVibrationMode] = useState(false);
@@ -60,16 +60,22 @@ export const MetronomScreen = ({ navigation }: Props) => {
     if (isTraining) return;
     if (bpm) {
       setIsTraining(true);
-      metronome?.start(bpm);
+      if (vibrationMode) {
+        const duration = 100;
+        const freq = 60000 / bpm;
+        Vibration.vibrate([freq - duration, duration], true);
+      } else {
+        metronome?.start(bpm);
+      }
     }
   }, [bpm, metronome, vibrationMode, isTraining, setIsTraining]);
 
   const stopTrainingHandler = () => {
     if (isTraining) {
       metronome?.stop();
+      Vibration.cancel();
     }
     setIsTraining(false);
-    Vibration.cancel();
   };
 
   const setFrequency = (frequency: number) => {

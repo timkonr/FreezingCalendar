@@ -5,4 +5,5 @@ export type RootStackParamList = {
   Metronom: undefined;
 };
 
-export type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+export type Props<T extends keyof RootStackParamList> = NativeStackScreenProps<RootStackParamList, T>;
+
