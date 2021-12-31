@@ -4,6 +4,7 @@ export type RootStackParamList = {
   Home: undefined;
   Metronom: undefined;
   Statistik: undefined;
+  Settings: undefined;
 };
 
 export type Props<T extends keyof RootStackParamList> = NativeStackScreenProps<RootStackParamList, T>;
