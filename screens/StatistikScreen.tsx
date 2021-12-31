@@ -14,8 +14,6 @@ export const StatistikScreen = ({ navigation }: Props<'Statistik'>) => {
 
   const loadTimes = useCallback(async () => {
     const jsonTimes = await AsyncStorage.getItem(TIMES);
-    console.log(jsonTimes);
-
     const times: TrackedTime[] = jsonTimes ? JSON.parse(jsonTimes) : [];
     setTimes(times);
   }, [setTimes]);
