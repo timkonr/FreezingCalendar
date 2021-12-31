@@ -5,8 +5,7 @@ import { TIMES } from '../constants/Values';
 import { Props, TrackedTime } from '../types';
 
 const toTimeString = (ms: number) => {
-  const minutes = Math.floor(ms / 60000);
-  return minutes > 0 ? `${minutes} Minuten` : '< 1 Minute';
+  return `${Math.floor(ms / 6000) / 10} Minuten`;
 };
 
 export const StatistikScreen = ({ navigation }: Props<'Statistik'>) => {
