@@ -8,3 +8,7 @@ export type RootStackParamList = {
 
 export type Props<T extends keyof RootStackParamList> = NativeStackScreenProps<RootStackParamList, T>;
 
+export type TrackedTime = {
+  day: string;
+  time: number;
+}
