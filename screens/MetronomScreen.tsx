@@ -8,7 +8,6 @@ import {
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
   TouchableWithoutFeedback,
   Vibration,
   View,
@@ -17,80 +16,66 @@ import {
   GameLoop,
   GameLoopUpdateEventOptionType,
 } from 'react-native-game-engine';
-import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
 import { Card } from '../components/Card';
-import { FrequencyInput } from '../components/FrequencyInput';
 import Colors from '../constants/Colors';
-import { CUEING_FREQUENCY } from '../constants/Values';
+import { BPM, BPM_MODIFIER, VIBRATION_MODE } from '../constants/Values';
 import { Props } from '../types';
 import { Metronome, Tracker } from '../utils';
 
 export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
   const [bpm, setBpm] = useState<number>();
   const [bpmModifier, setBpmModifier] = useState(1);
-  const [modalVisible, setModalVisible] = useState(false);
   const [vibrationMode, setVibrationMode] = useState(false);
   const [isTraining, setIsTraining] = useState(false);
   const [metronome, setMetronome] = useState<Metronome>();
   const [tracker, setTracker] = useState<Tracker>();
-  const [modusButtons, setModusButtons] = useState<RadioButtonProps[]>([
-    {
-      id: '1',
-      label: 'Sound',
-      value: 'sound',
-      selected: true,
-      onPress: () => setVibrationMode(false),
-      disabled: isTraining,
-    },
-    {
-      id: '2',
-      label: 'Vibration',
-      value: 'vibration',
-      onPress: () => setVibrationMode(true),
-      disabled: isTraining,
-    },
-  ]);
-  const [schwierigkeitsButtons, setSchwierigkeitsButtons] = useState<
-    RadioButtonProps[]
-  >([
-    {
-      id: '1',
-      label: 'leicht',
-      value: 'leicht',
-      onPress: () => setBpmModifier(0.9),
-      disabled: isTraining,
-      containerStyle: styles.button,
-    },
-    {
-      id: '2',
-      label: 'normal',
-      value: 'normal',
-      selected: true,
-      onPress: () => setBpmModifier(1),
-      disabled: isTraining,
-      containerStyle: styles.button,
-    },
-    {
-      id: '3',
-      label: 'schwer',
-      value: 'schwer',
-      onPress: () => setBpmModifier(1.1),
-      disabled: isTraining,
-      containerStyle: styles.button,
-    },
-  ]);
 
-  const loadSavedFrequency = useCallback(async () => {
-    const savedFrequency = await AsyncStorage.getItem(CUEING_FREQUENCY);
-    if (savedFrequency) setBpm(parseInt(savedFrequency));
+  const loadBpm = useCallback(async () => {
+    const savedBpm = await AsyncStorage.getItem(BPM);
+    console.log('[loadBpm]', savedBpm);
+
+    if (savedBpm) setBpm(parseInt(savedBpm));
   }, [setBpm]);
+
+  const loadBpmModifier = useCallback(async () => {
+    const savedBpmModifier = await AsyncStorage.getItem(BPM_MODIFIER);
+    console.log('[loadBpmModifier]', parseFloat(savedBpmModifier ?? ''));
+
+    if (savedBpmModifier) setBpmModifier(parseFloat(savedBpmModifier));
+  }, [setBpmModifier]);
+
+  const loadVibrationMode = useCallback(async () => {
+    const savedMode = await AsyncStorage.getItem(VIBRATION_MODE);
+    console.log('[loadVibrationMode]', savedMode);
+
+    if (savedMode) setVibrationMode(savedMode === 'true');
+  }, [setVibrationMode]);
+
+  const loadData = useCallback(async () => {
+    await loadBpm();
+    await loadBpmModifier();
+    await loadVibrationMode();
+  }, [loadBpm, loadBpmModifier, loadVibrationMode]);
 
   useEffect(() => {
     console.log('[MetronomScreen] useEffect');
-    loadSavedFrequency();
+    loadData();
     if (!metronome) setMetronome(new Metronome());
     if (!tracker) setTracker(new Tracker());
-  }, [loadSavedFrequency, metronome, setMetronome]);
+
+    return navigation.addListener('focus', () => {
+      loadData();
+      console.log('[MetronomeScreen] was focused');
+    });
+  }, [
+    loadBpm,
+    loadBpmModifier,
+    loadVibrationMode,
+    metronome,
+    setMetronome,
+    tracker,
+    setTracker,
+  ]);
 
   const startTrainingHandler = useCallback(() => {
     if (isTraining) return;
@@ -102,10 +87,18 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
         const freq = 60000 / bpm;
         Vibration.vibrate([freq - duration, duration], true);
       } else {
-        metronome?.start(bpm);
+        metronome?.start(bpm * bpmModifier);
       }
     }
-  }, [bpm, metronome, vibrationMode, isTraining, setIsTraining, tracker]);
+  }, [
+    bpm,
+    bpmModifier,
+    metronome,
+    vibrationMode,
+    isTraining,
+    setIsTraining,
+    tracker,
+  ]);
 
   const stopTrainingHandler = () => {
     if (isTraining) {
@@ -114,12 +107,6 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
     }
     tracker?.stopTracking();
     setIsTraining(false);
-  };
-
-  const setFrequency = (frequency: number) => {
-    setBpm(frequency);
-    setModalVisible(false);
-    AsyncStorage.setItem(CUEING_FREQUENCY, frequency.toString());
   };
 
   const onUpdateHandler = (args: GameLoopUpdateEventOptionType) => {
@@ -154,47 +141,6 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
                       disabled={!bpm || !isTraining}
                     />
                   </View>
-                </View>
-              </Card>
-              <Card style={styles.inputContainer} title="Cueing Frequenz">
-                <Text style={{ marginBottom: 10, fontWeight: 'bold' }}>
-                  {bpm ? bpm + ' bpm' : 'Bitte einstellen'}
-                </Text>
-                <Button
-                  color={Colors.primary}
-                  title={bpm ? 'Ändern' : 'Einstellen'}
-                  onPress={() => {
-                    setModalVisible(true);
-                  }}
-                  disabled={isTraining}
-                />
-              </Card>
-              <FrequencyInput
-                modalVisible={modalVisible}
-                setModalVisible={setModalVisible}
-                setFrequency={setFrequency}
-                cueingFrequency={bpm}
-              />
-              <Card style={styles.inputContainer} title="Modus">
-                <View style={styles.buttonContainer}>
-                  <RadioGroup
-                    radioButtons={modusButtons}
-                    onPress={(radioButtonsArray) =>
-                      setModusButtons(radioButtonsArray)
-                    }
-                    layout="row"
-                  />
-                </View>
-              </Card>
-              <Card style={styles.inputContainer} title="Schwierigkeit">
-                <View style={styles.buttonContainer}>
-                  <RadioGroup
-                    radioButtons={schwierigkeitsButtons}
-                    onPress={(radioButtonsArray) =>
-                      setSchwierigkeitsButtons(radioButtonsArray)
-                    }
-                    layout="column"
-                  />
                 </View>
               </Card>
             </View>

@@ -24,7 +24,7 @@ export class Metronome {
   }
 
   start(bpm:number) {
-    console.log('[Metronome] start');
+    console.log('[Metronome] start', bpm);
     
     this.internalProps.updateInMs = 60000 / bpm;
     this.internalProps.isRunning = true;

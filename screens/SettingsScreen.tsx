@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Button,
   SafeAreaView,
@@ -11,35 +11,47 @@ import {
 } from 'react-native';
 import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
 import { Card } from '../components/Card';
-import { Context } from '../components/Context';
 import { FrequencyInput } from '../components/FrequencyInput';
 import Colors from '../constants/Colors';
-import { CUEING_FREQUENCY } from '../constants/Values';
-import { Metronome, Tracker } from '../utils';
+import { BPM, BPM_MODIFIER, VIBRATION_MODE } from '../constants/Values';
 
 export const SettingsScreen = () => {
   const [bpm, setBpm] = useState<number>();
   const [bpmModifier, setBpmModifier] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [vibrationMode, setVibrationMode] = useState(false);
-  const [isTraining, setIsTraining] = useState(false);
-  const [metronome, setMetronome] = useState<Metronome>();
-  const [tracker, setTracker] = useState<Tracker>();
+
+  const saveVibrationMode = useCallback(
+    (vibrationMode: boolean) => {
+      setVibrationMode(vibrationMode);
+      AsyncStorage.setItem(VIBRATION_MODE, vibrationMode.toString());
+    },
+    [setVibrationMode]
+  );
+
+  const saveBpmModifier = useCallback(
+    (bpmModifier: number) => {
+      setBpmModifier(bpmModifier);
+      AsyncStorage.setItem(BPM_MODIFIER, bpmModifier.toString());
+    },
+    [setVibrationMode]
+  );
+
+  // TODO reflect changes in radiobuttongroups
   const [modusButtons, setModusButtons] = useState<RadioButtonProps[]>([
     {
       id: '1',
       label: 'Sound',
       value: 'sound',
-      selected: true,
-      onPress: () => setVibrationMode(false),
-      disabled: isTraining,
+      selected: !vibrationMode,
+      onPress: () => saveVibrationMode(false),
     },
     {
       id: '2',
       label: 'Vibration',
       value: 'vibration',
-      onPress: () => setVibrationMode(true),
-      disabled: isTraining,
+      onPress: () => saveVibrationMode(true),
+      selected: vibrationMode,
     },
   ]);
   const [schwierigkeitsButtons, setSchwierigkeitsButtons] = useState<
@@ -49,36 +61,60 @@ export const SettingsScreen = () => {
       id: '1',
       label: 'leicht',
       value: 'leicht',
-      onPress: () => setBpmModifier(0.9),
-      disabled: isTraining,
+      selected: bpmModifier === 0.9,
+      onPress: () => saveBpmModifier(0.9),
       containerStyle: styles.button,
     },
     {
       id: '2',
       label: 'normal',
       value: 'normal',
-      selected: true,
-      onPress: () => setBpmModifier(1),
-      disabled: isTraining,
+      selected: bpmModifier === 1,
+      onPress: () => saveBpmModifier(1),
       containerStyle: styles.button,
     },
     {
       id: '3',
       label: 'schwer',
       value: 'schwer',
-      onPress: () => setBpmModifier(1.1),
-      disabled: isTraining,
+      selected: bpmModifier === 1.1,
+      onPress: () => saveBpmModifier(1.1),
       containerStyle: styles.button,
     },
   ]);
 
-  const context = useContext(Context);
+  const loadBpm = useCallback(async () => {
+    const savedBpm = await AsyncStorage.getItem(BPM);
+    if (savedBpm) setBpm(parseInt(savedBpm));
+  }, [setBpm]);
 
-  const setFrequency = (frequency: number) => {
-    setBpm(frequency);
-    setModalVisible(false);
-    AsyncStorage.setItem(CUEING_FREQUENCY, frequency.toString());
-  };
+  const loadBpmModifier = useCallback(async () => {
+    const savedBpmModifier = await AsyncStorage.getItem(BPM_MODIFIER);
+    if (savedBpmModifier) setBpmModifier(parseInt(savedBpmModifier));
+    setSchwierigkeitsButtons((b) => b);
+  }, [setBpmModifier]);
+
+  const loadVibrationMode = useCallback(async () => {
+    const savedMode = await AsyncStorage.getItem(VIBRATION_MODE);
+    if (savedMode) setVibrationMode(savedMode === 'true');
+  }, [setVibrationMode]);
+
+  const saveBpm = useCallback(
+    (bpmToSave: number) => {
+      setBpm(bpmToSave);
+      setModalVisible(false);
+      AsyncStorage.setItem(BPM, bpmToSave.toString());
+    },
+    [setBpm, setModalVisible]
+  );
+
+  useEffect(() => {
+    console.log('[SettingsScreen] useEffect');
+
+    loadBpm();
+    loadBpmModifier();
+    loadVibrationMode();
+  }, [loadBpm, loadBpmModifier, loadVibrationMode]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -94,13 +130,12 @@ export const SettingsScreen = () => {
               onPress={() => {
                 setModalVisible(true);
               }}
-              disabled={isTraining}
             />
           </Card>
           <FrequencyInput
             modalVisible={modalVisible}
             setModalVisible={setModalVisible}
-            setFrequency={setFrequency}
+            setFrequency={saveBpm}
             cueingFrequency={bpm}
           />
           <Card style={styles.inputContainer} title="Modus">
