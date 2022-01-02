@@ -2,12 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   AppRegistry,
-  Button,
   Keyboard,
-  SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
+  Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   Vibration,
   View,
@@ -16,7 +15,6 @@ import {
   GameLoop,
   GameLoopUpdateEventOptionType,
 } from 'react-native-game-engine';
-import { Card } from '../components/Card';
 import Colors from '../constants/Colors';
 import { BPM, BPM_MODIFIER, VIBRATION_MODE } from '../constants/Values';
 import { Props } from '../types';
@@ -120,32 +118,52 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
       }}
     >
       <GameLoop onUpdate={onUpdateHandler}>
-        <SafeAreaView style={styles.container}>
-          <ScrollView style={styles.screen}>
-            <View style={{ alignItems: 'center' }}>
-              <Card style={styles.inputContainer}>
-                <View style={styles.buttonContainer}>
-                  <View style={styles.button}>
-                    <Button
-                      color={Colors.primary}
-                      title="Start"
-                      onPress={startTrainingHandler}
-                      disabled={!bpm || isTraining}
-                    />
-                  </View>
-                  <View style={styles.button}>
-                    <Button
-                      color={Colors.accent}
-                      title="Stopp"
-                      onPress={stopTrainingHandler}
-                      disabled={!bpm || !isTraining}
-                    />
-                  </View>
-                </View>
-              </Card>
-            </View>
-          </ScrollView>
-        </SafeAreaView>
+        <View style={styles.buttonContainer}>
+          <View style={styles.button}>
+            <TouchableOpacity
+              onPress={startTrainingHandler}
+              disabled={!bpm || isTraining}
+              activeOpacity={0.6}
+              style={{
+                ...styles.button,
+                ...styles.startButton,
+                backgroundColor:
+                  !bpm || isTraining ? Colors.inactive : Colors.primary,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 45,
+                  color: !bpm || isTraining ? 'grey' : 'white',
+                }}
+              >
+                START
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.button}>
+            <TouchableOpacity
+              onPress={stopTrainingHandler}
+              disabled={!bpm || !isTraining}
+              activeOpacity={0.6}
+              style={{
+                ...styles.button,
+                ...styles.stopButton,
+                backgroundColor:
+                  !bpm || !isTraining ? Colors.inactive : Colors.accent,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 45,
+                  color: !bpm || !isTraining ? 'grey' : 'white',
+                }}
+              >
+                STOP
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </GameLoop>
     </TouchableWithoutFeedback>
   );
@@ -166,17 +184,32 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'space-between',
-    padding: 15,
+    flex: 1,
+    flexDirection: 'column',
   },
   button: {
-    width: 100,
+    flex: 1,
+    height: '100%',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+    color: 'white',
+  },
+  inactiveButton: {
+    backgroundColor: Colors.inactive,
+    color: 'grey',
+  },
+  startButton: {
+    backgroundColor: Colors.primary,
+  },
+  stopButton: {
+    backgroundColor: Colors.accent,
   },
   container: {
     flex: 1,
     paddingTop: StatusBar.currentHeight,
+    paddingBottom: StatusBar.currentHeight,
   },
 });
 
