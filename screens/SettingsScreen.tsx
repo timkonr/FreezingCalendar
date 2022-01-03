@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Button,
   SafeAreaView,
@@ -9,7 +9,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { RadioButtonProps, RadioGroup } from 'react-native-radio-buttons-group';
+import { RadioGroup } from 'react-native-radio-buttons-group';
 import { Card } from '../components/Card';
 import { FrequencyInput } from '../components/FrequencyInput';
 import Colors from '../constants/Colors';
@@ -37,51 +37,63 @@ export const SettingsScreen = () => {
     [setVibrationMode]
   );
 
-  // TODO reflect changes in radiobuttongroups
-  const [modusButtons, setModusButtons] = useState<RadioButtonProps[]>([
-    {
-      id: '1',
-      label: 'Sound',
-      value: 'sound',
-      selected: !vibrationMode,
-      onPress: () => saveVibrationMode(false),
-    },
-    {
-      id: '2',
-      label: 'Vibration',
-      value: 'vibration',
-      onPress: () => saveVibrationMode(true),
-      selected: vibrationMode,
-    },
-  ]);
-  const [schwierigkeitsButtons, setSchwierigkeitsButtons] = useState<
-    RadioButtonProps[]
-  >([
-    {
-      id: '1',
-      label: 'leicht',
-      value: 'leicht',
-      selected: bpmModifier === 0.9,
-      onPress: () => saveBpmModifier(0.9),
-      containerStyle: styles.button,
-    },
-    {
-      id: '2',
-      label: 'normal',
-      value: 'normal',
-      selected: bpmModifier === 1,
-      onPress: () => saveBpmModifier(1),
-      containerStyle: styles.button,
-    },
-    {
-      id: '3',
-      label: 'schwer',
-      value: 'schwer',
-      selected: bpmModifier === 1.1,
-      onPress: () => saveBpmModifier(1.1),
-      containerStyle: styles.button,
-    },
-  ]);
+  const vibrationModeButtons = useMemo(() => {
+    return (
+      <RadioGroup
+        radioButtons={[
+          {
+            id: '1',
+            label: 'Sound',
+            value: 'sound',
+            selected: !vibrationMode,
+            onPress: () => saveVibrationMode(false),
+          },
+          {
+            id: '2',
+            label: 'Vibration',
+            value: 'vibration',
+            onPress: () => saveVibrationMode(true),
+            selected: vibrationMode,
+          },
+        ]}
+        layout="row"
+      />
+    );
+  }, [vibrationMode, saveVibrationMode]);
+
+  const bpmModifierButtons = useMemo(() => {
+    return (
+      <RadioGroup
+        radioButtons={[
+          {
+            id: '1',
+            label: 'leicht',
+            value: 'leicht',
+            selected: bpmModifier === 0.9,
+            onPress: () => saveBpmModifier(0.9),
+            containerStyle: styles.button,
+          },
+          {
+            id: '2',
+            label: 'normal',
+            value: 'normal',
+            selected: bpmModifier === 1,
+            onPress: () => saveBpmModifier(1),
+            containerStyle: styles.button,
+          },
+          {
+            id: '3',
+            label: 'schwer',
+            value: 'schwer',
+            selected: bpmModifier === 1.1,
+            onPress: () => saveBpmModifier(1.1),
+            containerStyle: styles.button,
+          },
+        ]}
+        layout="column"
+      />
+    );
+  }, [bpmModifier, saveBpmModifier]);
 
   const loadBpm = useCallback(async () => {
     const savedBpm = await AsyncStorage.getItem(BPM);
@@ -90,8 +102,7 @@ export const SettingsScreen = () => {
 
   const loadBpmModifier = useCallback(async () => {
     const savedBpmModifier = await AsyncStorage.getItem(BPM_MODIFIER);
-    if (savedBpmModifier) setBpmModifier(parseInt(savedBpmModifier));
-    setSchwierigkeitsButtons((b) => b);
+    if (savedBpmModifier) setBpmModifier(parseFloat(savedBpmModifier));
   }, [setBpmModifier]);
 
   const loadVibrationMode = useCallback(async () => {
@@ -139,26 +150,10 @@ export const SettingsScreen = () => {
             cueingFrequency={bpm}
           />
           <Card style={styles.inputContainer} title="Modus">
-            <View style={styles.buttonContainer}>
-              <RadioGroup
-                radioButtons={modusButtons}
-                onPress={(radioButtonsArray) =>
-                  setModusButtons(radioButtonsArray)
-                }
-                layout="row"
-              />
-            </View>
+            <View style={styles.buttonContainer}>{vibrationModeButtons}</View>
           </Card>
           <Card style={styles.inputContainer} title="Schwierigkeit">
-            <View style={styles.buttonContainer}>
-              <RadioGroup
-                radioButtons={schwierigkeitsButtons}
-                onPress={(radioButtonsArray) =>
-                  setSchwierigkeitsButtons(radioButtonsArray)
-                }
-                layout="column"
-              />
-            </View>
+            <View style={styles.buttonContainer}>{bpmModifierButtons}</View>
           </Card>
         </View>
       </ScrollView>
