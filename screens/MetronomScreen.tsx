@@ -57,23 +57,17 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
 
   useEffect(() => {
     console.log('[MetronomScreen] useEffect');
-    loadData();
-    if (!metronome) setMetronome(new Metronome());
-    if (!tracker) setTracker(new Tracker());
 
     return navigation.addListener('focus', () => {
       loadData();
       console.log('[MetronomeScreen] was focused');
     });
-  }, [
-    loadBpm,
-    loadBpmModifier,
-    loadVibrationMode,
-    metronome,
-    setMetronome,
-    tracker,
-    setTracker,
-  ]);
+  }, [loadData]);
+
+  useEffect(() => {
+    if (!metronome) setMetronome(new Metronome());
+    if (!tracker) setTracker(new Tracker());
+  }, [metronome, setMetronome, tracker, setTracker]);
 
   const startTrainingHandler = useCallback(() => {
     if (isTraining) return;
