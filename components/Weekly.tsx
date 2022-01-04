@@ -10,6 +10,8 @@ export type WeeklyProps = {
   yLabels: number[];
 };
 
+// FIXME: sometimes <VictoryLines data={times} /> throws error "undefined is not an object", don't know why though
+// I think it happens only when there is data for today
 export const Weekly = ({ times, xLabels, yLabels }: WeeklyProps) => {
   return (
     <Card style={styles.inputContainer} title="Woche">
