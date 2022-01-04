@@ -21,7 +21,7 @@ export default function App() {
         <Stack.Screen
           name="Home"
           component={StartScreen}
-          options={{ title: 'Home' }}
+          options={{ title: 'Start' }}
         />
         <Stack.Screen
           name="Metronom"
