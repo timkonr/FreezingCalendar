@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 import { TrackedTime } from '../types';
 import { Card } from './Card';
 export type LifetimeProps = {
-  times?: TrackedTime[];
+  times: TrackedTime[];
 };
 
 export const Lifetime = ({ times }: LifetimeProps) => {
