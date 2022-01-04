@@ -105,8 +105,8 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
 
   return (
     <GameLoop onUpdate={onUpdateHandler}>
-      <View style={styles.buttonContainer}>
-        <View style={styles.button}>
+      <View style={styles.screen}>
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
             onPress={startTrainingHandler}
             disabled={!bpm || isTraining}
@@ -127,8 +127,6 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
               START
             </Text>
           </TouchableOpacity>
-        </View>
-        <View style={styles.button}>
           <TouchableOpacity
             onPress={stopTrainingHandler}
             disabled={!bpm || !isTraining}
@@ -158,6 +156,7 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    alignItems: 'center',
   },
   title: {
     fontSize: 20,
@@ -170,8 +169,10 @@ const styles = StyleSheet.create({
     margin: 10,
   },
   buttonContainer: {
-    flex: 1,
-    flexDirection: 'column',
+    width: '100%',
+    height: '100%',
+    justifyContent: 'space-evenly',
+    padding: 15,
   },
   button: {
     flex: 1,
@@ -181,6 +182,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
     color: 'white',
+    marginVertical: 10,
   },
   inactiveButton: {
     backgroundColor: Colors.inactive,
