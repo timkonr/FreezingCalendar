@@ -14,6 +14,10 @@ const toLocaleDateString = (date: string) => {
   return `${date.slice(3, 5)}.${date.slice(0, 2)}.${date.slice(6, 10)}`;
 };
 
+// TODO: limit plot to week and add plot for month
+// TODO: add lifetime stats for trained days
+// TODO: add streaks?
+// inspiration: https://agentestudio.com/blog/healthcare-app-gamification
 export const StatistikScreen = ({ navigation }: Props<'Statistik'>) => {
   const [times, setTimes] = useState<TrackedTime[]>();
   const [yLabels, setYLabels] = useState<number[]>();
