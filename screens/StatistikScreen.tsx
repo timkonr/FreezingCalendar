@@ -1,12 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import {
-  VictoryAxis,
-  VictoryBar,
-  VictoryChart,
-  VictoryTheme,
-} from 'victory-native';
+import { StyleSheet, View } from 'react-native';
+import { Weekly } from '../components/Weekly';
 import { TIMES } from '../constants/Values';
 import { Props, TrackedTime } from '../types';
 
@@ -70,34 +65,7 @@ export const StatistikScreen = ({ navigation }: Props<'Statistik'>) => {
 
   return (
     <View style={styles.screen}>
-      <Text style={{ fontSize: 34 }}>Woche</Text>
-      {weeklyTimes && (
-        <View style={{ width: '100%' }}>
-          <VictoryChart
-            domainPadding={20}
-            width={350}
-            padding={70}
-            theme={VictoryTheme.material}
-          >
-            <VictoryAxis
-              label="Tag"
-              style={{
-                axisLabel: { padding: 35 },
-                tickLabels: { padding: 15 },
-              }}
-              tickValues={xLabels}
-              fixLabelOverlap
-            />
-            <VictoryAxis
-              label="Minuten"
-              dependentAxis
-              tickValues={yLabels}
-              style={{ axisLabel: { padding: 50 } }}
-            />
-            <VictoryBar data={weeklyTimes} x="day" y="time" />
-          </VictoryChart>
-        </View>
-      )}
+      <Weekly times={weeklyTimes} xLabels={xLabels} yLabels={yLabels} />
     </View>
   );
 };
