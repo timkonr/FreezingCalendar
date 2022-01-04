@@ -33,7 +33,7 @@ export const StatistikScreen = ({ navigation }: Props<'Statistik'>) => {
       : [];
     setTotalTimes(times);
     const timeArray = times.map((time) => time.time);
-    const max = Math.max(...timeArray);
+    const max = Math.max(...timeArray, 10);
     setYLabels([
       Math.floor((10 * max) / 4) / 10,
       Math.floor((10 * max * 2) / 4) / 10,
