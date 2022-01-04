@@ -26,7 +26,7 @@ export default function App() {
         <Stack.Screen
           name="Metronom"
           component={MetronomScreen}
-          options={{ headerRight: SettingsButton }}
+          options={{ headerRight: SettingsButton, title: 'Training' }}
         />
         <Stack.Screen name="Statistik" component={StatistikScreen} />
         <Stack.Screen
