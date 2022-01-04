@@ -2,12 +2,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   AppRegistry,
-  Keyboard,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   Vibration,
   View,
 } from 'react-native';
@@ -106,60 +104,54 @@ export const MetronomScreen = ({ navigation }: Props<'Metronom'>) => {
   };
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-    >
-      <GameLoop onUpdate={onUpdateHandler}>
-        <View style={styles.buttonContainer}>
-          <View style={styles.button}>
-            <TouchableOpacity
-              onPress={startTrainingHandler}
-              disabled={!bpm || isTraining}
-              activeOpacity={0.6}
+    <GameLoop onUpdate={onUpdateHandler}>
+      <View style={styles.buttonContainer}>
+        <View style={styles.button}>
+          <TouchableOpacity
+            onPress={startTrainingHandler}
+            disabled={!bpm || isTraining}
+            activeOpacity={0.6}
+            style={{
+              ...styles.button,
+              ...styles.startButton,
+              backgroundColor:
+                !bpm || isTraining ? Colors.inactive : Colors.primary,
+            }}
+          >
+            <Text
               style={{
-                ...styles.button,
-                ...styles.startButton,
-                backgroundColor:
-                  !bpm || isTraining ? Colors.inactive : Colors.primary,
+                fontSize: 45,
+                color: !bpm || isTraining ? 'grey' : 'white',
               }}
             >
-              <Text
-                style={{
-                  fontSize: 45,
-                  color: !bpm || isTraining ? 'grey' : 'white',
-                }}
-              >
-                START
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.button}>
-            <TouchableOpacity
-              onPress={stopTrainingHandler}
-              disabled={!bpm || !isTraining}
-              activeOpacity={0.6}
-              style={{
-                ...styles.button,
-                ...styles.stopButton,
-                backgroundColor:
-                  !bpm || !isTraining ? Colors.inactive : Colors.accent,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 45,
-                  color: !bpm || !isTraining ? 'grey' : 'white',
-                }}
-              >
-                STOP
-              </Text>
-            </TouchableOpacity>
-          </View>
+              START
+            </Text>
+          </TouchableOpacity>
         </View>
-      </GameLoop>
-    </TouchableWithoutFeedback>
+        <View style={styles.button}>
+          <TouchableOpacity
+            onPress={stopTrainingHandler}
+            disabled={!bpm || !isTraining}
+            activeOpacity={0.6}
+            style={{
+              ...styles.button,
+              ...styles.stopButton,
+              backgroundColor:
+                !bpm || !isTraining ? Colors.inactive : Colors.accent,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 45,
+                color: !bpm || !isTraining ? 'grey' : 'white',
+              }}
+            >
+              STOP
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </GameLoop>
   );
 };
 
