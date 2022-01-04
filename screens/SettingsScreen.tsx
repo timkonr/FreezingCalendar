@@ -2,13 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   Button,
-  Keyboard,
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { RadioGroup } from 'react-native-radio-buttons-group';
@@ -130,42 +128,36 @@ export const SettingsScreen = () => {
   }, [loadBpm, loadBpmModifier, loadVibrationMode]);
 
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        Keyboard.dismiss();
-      }}
-    >
-      <SafeAreaView style={styles.container}>
-        <ScrollView style={styles.screen}>
-          <View style={{ alignItems: 'center' }}>
-            <Card style={styles.inputContainer} title="Cueing Frequenz">
-              <Text style={{ marginBottom: 10, fontWeight: 'bold' }}>
-                {bpm ? bpm + ' bpm' : 'Bitte einstellen'}
-              </Text>
-              <Button
-                color={Colors.primary}
-                title={bpm ? 'Ändern' : 'Einstellen'}
-                onPress={() => {
-                  setModalVisible(true);
-                }}
-              />
-            </Card>
-            <FrequencyInput
-              modalVisible={modalVisible}
-              setModalVisible={setModalVisible}
-              setFrequency={saveBpm}
-              cueingFrequency={bpm}
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.screen}>
+        <View style={{ alignItems: 'center' }}>
+          <Card style={styles.inputContainer} title="Cueing Frequenz">
+            <Text style={{ marginBottom: 10, fontWeight: 'bold' }}>
+              {bpm ? bpm + ' bpm' : 'Bitte einstellen'}
+            </Text>
+            <Button
+              color={Colors.primary}
+              title={bpm ? 'Ändern' : 'Einstellen'}
+              onPress={() => {
+                setModalVisible(true);
+              }}
             />
-            <Card style={styles.inputContainer} title="Modus">
-              <View style={styles.buttonContainer}>{vibrationModeButtons}</View>
-            </Card>
-            <Card style={styles.inputContainer} title="Schwierigkeit">
-              <View style={styles.buttonContainer}>{bpmModifierButtons}</View>
-            </Card>
-          </View>
-        </ScrollView>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+          </Card>
+          <FrequencyInput
+            modalVisible={modalVisible}
+            setModalVisible={setModalVisible}
+            setFrequency={saveBpm}
+            cueingFrequency={bpm}
+          />
+          <Card style={styles.inputContainer} title="Modus">
+            <View style={styles.buttonContainer}>{vibrationModeButtons}</View>
+          </Card>
+          <Card style={styles.inputContainer} title="Schwierigkeit">
+            <View style={styles.buttonContainer}>{bpmModifierButtons}</View>
+          </Card>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

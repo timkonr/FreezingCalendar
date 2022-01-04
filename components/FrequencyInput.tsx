@@ -6,6 +6,7 @@ import {
   Modal,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import Colors from '../constants/Colors';
@@ -53,35 +54,41 @@ export const FrequencyInput = ({
 
   return (
     <Modal animationType="slide" transparent={false} visible={modalVisible}>
-      <View style={(styles.centeredView, styles.inputContainer)}>
-        <Text>Frequenz in bpm</Text>
-        <Input
-          blurOnSubmit
-          style={styles.input}
-          autoCapitalize={'none'}
-          autoCorrect={false}
-          keyboardType="number-pad"
-          maxLength={3}
-          onChangeText={numberInputHandler}
-          value={input}
-        />
-        <View style={styles.buttonContainer}>
-          <View style={styles.button}>
-            <Button
-              title="Abbrechen"
-              onPress={resetInputHandler}
-              color={Colors.accent}
-            />
-          </View>
-          <View style={styles.button}>
-            <Button
-              title="Bestätigen"
-              onPress={confirmInputHandler}
-              color={Colors.primary}
-            />
+      <TouchableWithoutFeedback
+        onPress={() => {
+          Keyboard.dismiss();
+        }}
+      >
+        <View style={(styles.centeredView, styles.inputContainer)}>
+          <Text>Frequenz in bpm</Text>
+          <Input
+            blurOnSubmit
+            style={styles.input}
+            autoCapitalize={'none'}
+            autoCorrect={false}
+            keyboardType="number-pad"
+            maxLength={3}
+            onChangeText={numberInputHandler}
+            value={input}
+          />
+          <View style={styles.buttonContainer}>
+            <View style={styles.button}>
+              <Button
+                title="Abbrechen"
+                onPress={resetInputHandler}
+                color={Colors.accent}
+              />
+            </View>
+            <View style={styles.button}>
+              <Button
+                title="Bestätigen"
+                onPress={confirmInputHandler}
+                color={Colors.primary}
+              />
+            </View>
           </View>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 };
