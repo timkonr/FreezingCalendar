@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Lifetime } from '../components/Lifetime';
 import { Weekly } from '../components/Weekly';
 import { TIMES } from '../constants/Values';
 import { Props, TrackedTime } from '../types';
@@ -66,6 +67,7 @@ export const StatistikScreen = ({ navigation }: Props<'Statistik'>) => {
   return (
     <View style={styles.screen}>
       <Weekly times={weeklyTimes} xLabels={xLabels} yLabels={yLabels} />
+      <Lifetime times={totalTimes} />
     </View>
   );
 };
