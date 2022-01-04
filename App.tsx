@@ -29,7 +29,11 @@ export default function App() {
           options={{ headerRight: SettingsButton }}
         />
         <Stack.Screen name="Statistik" component={StatistikScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ title: 'Einstellungen' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
