@@ -20,11 +20,12 @@ const toLocaleDateString = (date: string) => {
 // TODO: add streaks?
 // inspiration: https://agentestudio.com/blog/healthcare-app-gamification
 export const StatistikScreen = ({ navigation }: Props<'Statistik'>) => {
-  const [times, setTimes] = useState<TrackedTime[]>();
+  const [totalTimes, setTotalTimes] = useState<TrackedTime[]>();
+  const [weeklyTimes, setWeeklyTimes] = useState<TrackedTime[]>();
   const [yLabels, setYLabels] = useState<number[]>();
   const [xLabels, setXLabels] = useState<string[]>();
 
-  // FIXME: dependency array, split functionality into different methods?
+  // FIXME: split functionality into different methods?
   const loadTimes = useCallback(async () => {
     const jsonTimes = await AsyncStorage.getItem(TIMES);
     const times: TrackedTime[] = jsonTimes
@@ -35,7 +36,7 @@ export const StatistikScreen = ({ navigation }: Props<'Statistik'>) => {
           };
         })
       : [];
-    setTimes(times);
+    setTotalTimes(times);
     const timeArray = times.map((time) => time.time);
     const max = Math.max(...timeArray);
     setYLabels([
@@ -53,8 +54,15 @@ export const StatistikScreen = ({ navigation }: Props<'Statistik'>) => {
       return toLocaleDateString(day.toLocaleDateString('de-AT'));
     });
 
+    setWeeklyTimes(
+      datesArray.map((date) => {
+        return (
+          times.find((time) => time.day === date) ?? { day: date, time: 0 }
+        );
+      })
+    );
     setXLabels(datesArray.reverse());
-  }, [setTimes]);
+  }, [setTotalTimes, setWeeklyTimes, setXLabels, setYLabels]);
 
   useEffect(() => {
     loadTimes();
@@ -62,35 +70,33 @@ export const StatistikScreen = ({ navigation }: Props<'Statistik'>) => {
 
   return (
     <View style={styles.screen}>
-      {times && (
-        <>
-          <Text style={{ fontSize: 34 }}>Woche</Text>
-          <View style={{ width: '100%', borderWidth: 5 }}>
-            <VictoryChart
-              domainPadding={20}
-              width={350}
-              padding={70}
-              theme={VictoryTheme.material}
-            >
-              <VictoryAxis
-                label="Tag"
-                style={{
-                  axisLabel: { padding: 35 },
-                  tickLabels: { padding: 15 },
-                }}
-                tickValues={xLabels}
-                fixLabelOverlap
-              />
-              <VictoryAxis
-                label="Minuten"
-                dependentAxis
-                tickValues={yLabels}
-                style={{ axisLabel: { padding: 50 } }}
-              />
-              <VictoryBar data={times} x="day" y="time" />
-            </VictoryChart>
-          </View>
-        </>
+      <Text style={{ fontSize: 34 }}>Woche</Text>
+      {weeklyTimes && (
+        <View style={{ width: '100%' }}>
+          <VictoryChart
+            domainPadding={20}
+            width={350}
+            padding={70}
+            theme={VictoryTheme.material}
+          >
+            <VictoryAxis
+              label="Tag"
+              style={{
+                axisLabel: { padding: 35 },
+                tickLabels: { padding: 15 },
+              }}
+              tickValues={xLabels}
+              fixLabelOverlap
+            />
+            <VictoryAxis
+              label="Minuten"
+              dependentAxis
+              tickValues={yLabels}
+              style={{ axisLabel: { padding: 50 } }}
+            />
+            <VictoryBar data={weeklyTimes} x="day" y="time" />
+          </VictoryChart>
+        </View>
       )}
     </View>
   );
