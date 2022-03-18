@@ -70,6 +70,7 @@ export const FrequencyInput = ({
             maxLength={3}
             onChangeText={numberInputHandler}
             value={input}
+            autoFocus
           />
           <View style={styles.buttonContainer}>
             <View style={styles.button}>
